@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCE Page</title>
+</head>
+<body>
+    <h2>RCE Page</h2>
+
+    <form id="RCEForm">
+        <label for="RCETerm">RCE user:</label>
+        <input type="text" id="RCETerm" name="RCE_term" required>
+        <button type="submit">RCE</button>
+    </form>
+    <form action="/logout" method="GET">
+        <button type="submit">Logout</button>
+    </form>
+
+    <form action="/search" method="GET">
+        <button type="submit">rce</button>
+    </form>
+    <div id="RCEResults"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // AJAX 
+        $('#RCEForm').submit(function (e) {
+            e.preventDefault();
+            var RCETerm = $('#RCETerm').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/index',
+                data: { RCE_term: RCETerm },
+                success: function (data) {
+                    displayResults(data);
+                }
+            });
+        });
+
+        // результат поиска
+        function displayResults(results) {
+            var resultHtml = '<h3>Результаты поиска:</h3>';
+
+            if (results.length === 0) {
+                resultHtml += '<p>Пользователь не найден: ' + $('#RCETerm').val() + '</p>';
+            } else {
+                resultHtml += '<ul>';
+                results.forEach(function (result) {
+                    resultHtml += '<li>' + result.username + '</li>';
+                });
+                resultHtml += '</ul>';
+            }
+
+            $('#RCEResults').html(resultHtml);
+        }
+    </script>
+</body>
+</html>
